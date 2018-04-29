@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-class SmsSingleSender : public SmsBase
+class SmsSingleSender final : public SmsBase
 {
 public:
 	SmsSingleSender(std::shared_ptr<asio::io_service> &io, int64_t appid, const std::string &appkey)
@@ -63,6 +63,51 @@ protected:
 		static std::string path("/v5/tlssmssvr/sendsms");
 		return path;
 	}
+};
+
+
+class SmsSingleSenderResult final : public SmsResultBase
+{
+public:
+	explicit SmsSingleSenderResult(const std::shared_ptr<HttpsClient::Response> &response)
+		:SmsResultBase(response)
+	{
+		auto json = nlohmann::json::parse(response_->content);
+
+		if (json == nullptr) return;
+
+		result_ = json.at("result").get<int32_t>();
+		errMsg_ = json.at("errmsg").get<std::string>();
+
+		auto iter = json.find("ext");
+		if (iter != json.end())
+		{
+			ext_ = iter->get<std::string>();
+		}
+		iter = json.find("sid");
+		if (iter != json.end())
+		{
+			sid_ = iter->get<std::string>();
+		}
+		iter = json.find("fee");
+		if (iter != json.end())
+		{
+			fee_ = iter->get<int32_t>();
+		}
+	}
+
+	int32_t getResult() const { return result_; }
+	int32_t getFee() const { return fee_; }
+	const std::string &getErrMsg() const { return errMsg_; }
+	const std::string &getExt() const { return ext_; }
+	const std::string &getSid() const { return sid_; }
+
+private:
+	int32_t result_ = 0;
+	std::string errMsg_;
+	std::string ext_;
+	std::string sid_;
+	int32_t fee_ = 0;
 };
 
 #endif

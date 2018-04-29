@@ -13,9 +13,10 @@
 
 #include <string>
 #include <vector>
+#include <list>
 
 
-class SmsMultiSender : public SmsBase
+class SmsMultiSender final : public SmsBase
 {
 public:
 	SmsMultiSender(std::shared_ptr<asio::io_service> &io, int32_t appid, const std::string &appkey)
@@ -77,6 +78,96 @@ private:
 		}
 		return vec;
 	}
+};
+
+class SmsMultiSenderResult final : public SmsResultBase
+{
+public:
+	class Detail final
+	{
+	public:
+		explicit Detail(const nlohmann::json &json)
+		{
+			result_ = json.at("result").get<int32_t>();
+			errMsg_ = json.at("errmsg").get<std::string>();
+
+			auto iter = json.find("mobile");
+			if (iter != json.end())
+			{
+				mobile_ = iter->get<std::string>();
+			}
+
+			iter = json.find("nationcode");
+			if (iter != json.end())
+			{
+				nationCode_ = iter->get<std::string>();
+			}
+
+			iter = json.find("sid");
+			if (iter != json.end())
+			{
+				sid_ = iter->get<std::string>();
+
+			}
+			iter = json.find("fee");
+			if (iter != json.end())
+			{
+				fee_ = iter->get<int32_t>();
+			}
+		}
+
+		int32_t getResult() const { return result_; }
+		const std::string &getErrMsg() const { return errMsg_; }
+		const std::string &getMobile() const { return mobile_; }
+		const std::string &getNationCode() const { return nationCode_; }
+		const std::string &getSid() const { return sid_; }
+		int32_t getFee() const { return fee_; }
+
+	private:
+		int32_t result_ = 0;
+		std::string errMsg_;
+		std::string mobile_;
+		std::string nationCode_;
+		std::string sid_;
+		int32_t fee_ = 0;
+	};
+
+	explicit SmsMultiSenderResult(const std::shared_ptr<HttpsClient::Response> &response)
+		:SmsResultBase(response)
+	{
+		auto json = nlohmann::json::parse(response_->content);
+
+		if (json == nullptr) return;
+
+		result_ = json.at("result").get<int32_t>();
+		errMsg_ = json.at("errmsg").get<std::string>();
+
+		auto iter = json.find("ext");
+		if (iter != json.end())
+		{
+			ext_ = iter->get<std::string>();
+		}
+
+		iter = json.find("detail");
+		if (iter != json.end())
+		{
+			for(auto item : iter->items())
+			{
+				details_.emplace_back(Detail(item.value()));
+			}
+		}
+	}
+
+	int32_t getResult() const { return result_; }
+	const std::string &getErrMsg() const { return errMsg_; }
+	const std::string &getExt() const { return ext_; }
+	const std::list<Detail> &getDetails() const {return details_; }
+
+private:
+	int32_t result_ = 0;
+	std::string errMsg_;
+	std::string ext_;
+	std::list<Detail> details_;
 };
 
 #endif

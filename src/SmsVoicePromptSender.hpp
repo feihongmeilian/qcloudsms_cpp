@@ -8,11 +8,14 @@
 
 #include "SmsBase.hpp"
 #include "SmsSenderUtil.hpp"
+#include "SmsVoiceVerifyCodeSender.hpp"
 
 #include <nlohmann/json.hpp>
 #include <string>
 
-class SmsVoicePromptSender : public SmsBase
+using SmsVoicePromptSenderResult = SmsVoiceVerifyCodeSenderResult;
+
+class SmsVoicePromptSender final : public SmsBase
 {
 public:
 	SmsVoicePromptSender(std::shared_ptr<asio::io_service> &io, int32_t appid, const std::string &appkey)

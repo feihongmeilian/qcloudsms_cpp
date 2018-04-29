@@ -14,10 +14,11 @@
 #include <memory>
 #include <string>
 
+using HttpsClient = SimpleWeb::Client<SimpleWeb::HTTPS>;
+
 class SmsBase
 {
 public:
-	using HttpsClient = SimpleWeb::Client<SimpleWeb::HTTPS>;
 	using RequestCallbackFunction = std::function<void(std::shared_ptr<HttpsClient::Response>, const SimpleWeb::error_code &)>;
 
 
@@ -51,6 +52,28 @@ protected:
 	int32_t appid_;
 	std::string appkey_;
 	HttpsClient sms_connect_;
+};
+
+
+class SmsResultBase
+{
+public:
+	explicit SmsResultBase(const std::shared_ptr<HttpsClient::Response> &response)
+		:response_(response) {}
+	virtual ~SmsResultBase() = default;
+
+	std::shared_ptr<HttpsClient::Response> getResponse() const
+	{
+		return response_;
+	}
+
+	std::string ToString() const
+	{
+		return response_->content.string();
+	}
+
+protected:
+	std::shared_ptr<HttpsClient::Response> response_;
 };
 
 #endif

@@ -8,11 +8,15 @@
 
 #include "SmsBase.hpp"
 #include "SmsSenderUtil.hpp"
+#include "SmsStatusPuller.hpp"
 
 #include <nlohmann/json.hpp>
 #include <string>
 
-class SmsMobileStatusPuller : public SmsBase
+using SmsMobileStatusPullCallbackResult = SmsStatusPullCallbackResult;
+using SmsMobileStatusPullReplyResult = SmsStatusPullReplyResult;
+
+class SmsMobileStatusPuller final : public SmsBase
 {
 public:
 	SmsMobileStatusPuller(std::shared_ptr<asio::io_service> &io, int32_t appid, const std::string &appkey)

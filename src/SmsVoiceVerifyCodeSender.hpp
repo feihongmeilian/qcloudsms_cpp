@@ -12,7 +12,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-class SmsVoiceVerifyCodeSender : public SmsBase
+class SmsVoiceVerifyCodeSender final : public SmsBase
 {
 public:
 	SmsVoiceVerifyCodeSender(std::shared_ptr<asio::io_service> &io, int32_t appid, const std::string &appkey)
@@ -41,6 +41,44 @@ protected:
 		static std::string path("/v5/tlsvoicesvr/sendvoice");
 		return path;
 	}
+};
+
+
+class SmsVoiceVerifyCodeSenderResult  final : public SmsResultBase
+{
+public:
+	explicit SmsVoiceVerifyCodeSenderResult(const std::shared_ptr<HttpsClient::Response> &response)
+		:SmsResultBase(response)
+	{
+		auto json = nlohmann::json::parse(response_->content);
+
+		if (json == nullptr) return;
+
+		result_ = json.at("result").get<int32_t>();
+		errMsg_ = json.at("errmsg").get<std::string>();
+
+		auto iter = json.find("ext");
+		if (iter != json.end())
+		{
+			ext_ = iter->get<std::string>();
+		}
+		iter = json.find("callid");
+		if (iter != json.end())
+		{
+			callId_ = iter->get<std::string>();
+		}
+	}
+
+	int32_t getResult() const { return result_; }
+	const std::string &getErrMsg() const { return errMsg_; }
+	const std::string &getExt() const { return ext_; }
+	const std::string &getCallId() const { return callId_; }
+
+private:
+	int32_t result_ = 0;
+	std::string errMsg_;
+	std::string ext_;
+	std::string callId_;
 };
 
 #endif
