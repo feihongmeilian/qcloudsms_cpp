@@ -36,6 +36,11 @@ include_directories(../deps/Simple-Web-Server)
 	    int type = 0;
 
 	    std::string msg([填自己的];);
+    #if ( defined(WIN32) || defined(WIN64) )
+            auto msg = SmsSenderUtil::gbk2utf8(msg0);
+    #else
+            std::string msg(std::move(msg0));
+    #endif
 	    SmsSingleSender sender(io_context, appid, appkey);
 	    sender.sendWithParam(nationcode, phoneNumber, 113462, { "654321","1" }, "", "", "",[](std::shared_ptr<SimpleWeb::Client<SimpleWeb::HTTPS>::Response> response, const SimpleWeb::error_code &ec) {
                 if (!ec)
