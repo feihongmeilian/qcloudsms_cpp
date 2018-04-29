@@ -36,22 +36,46 @@ include_directories(../deps/Simple-Web-Server)
 	    int type = 0;
 
 	    std::string msg([填自己的];);
+    #if ( defined(WIN32) || defined(WIN64) )
+            auto msg = SmsSenderUtil::gbk2utf8(msg0);
+    #else
+            std::string msg(std::move(msg0));
+    #endif
 	    SmsSingleSender sender(io_context, appid, appkey);
 	    sender.sendWithParam(nationcode, phoneNumber, 113462, { "654321","1" }, "", "", "",[](std::shared_ptr<SimpleWeb::Client<SimpleWeb::HTTPS>::Response> response, const SimpleWeb::error_code &ec) {
-		    if (!ec)
-			    std::cout << response->content.rdbuf() << std::endl;
+                if (!ec)
+                {
+                    SmsSingleSenderResult result(response);
+                    std::cout << "result:" << result.getResult() << std::endl;
+                    std::cout << "errMsg:" << result.getErrMsg() << std::endl;
+                    std::cout << "ext:" << result.getExt() << std::endl;
+                    std::cout << "sid:" << result.getSid() << std::endl;
+                    std::cout << "fee:" << result.getFee() << std::endl;
+                }
 	    });
 
 
 	    sender.send(type, nationcode, phoneNumber, msg, "", "", [](std::shared_ptr<SimpleWeb::Client<SimpleWeb::HTTPS>::Response> response, const SimpleWeb::error_code &ec) {
-		    if (!ec)
-			    std::cout << response->content.rdbuf() << std::endl;
+                if (!ec)
+                {
+                    SmsSingleSenderResult result(response);
+                    std::cout << "result:" << result.getResult() << std::endl;
+                    std::cout << "errMsg:" << result.getErrMsg() << std::endl;
+                    std::cout << "ext:" << result.getExt() << std::endl;
+                    std::cout << "sid:" << result.getSid() << std::endl;
+                    std::cout << "fee:" << result.getFee() << std::endl;
+                }
 	    });
 	
 	    SmsMultiSender msender(io_context, appid, appkey);
 	    msender.sendWithParam(nationcode, { phoneNumber }, 113462, { "567894","10" }, "", "", "", [](std::shared_ptr<SimpleWeb::Client<SimpleWeb::HTTPS>::Response> response, const SimpleWeb::error_code &ec) {
-		    if (!ec)
-			    std::cout << response->content.rdbuf() << std::endl;
+                if (!ec)
+                {
+                    SmsMultiSenderResult result(response);
+                    std::cout << "result:" << result.getResult() << std::endl;
+                    std::cout << "errMsg:" << result.getErrMsg() << std::endl;
+                    std::cout << "ext:" << result.getExt() << std::endl;
+                }
 	    });
 	    io_context->run();
     }
