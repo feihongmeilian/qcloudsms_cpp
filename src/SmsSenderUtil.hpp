@@ -16,7 +16,9 @@
 #include <memory>
 #include <iomanip>
 
+#if ( defined(WIN32) || defined(WIN64) )
 #include <winnls.h>
+#endif
 
 class SmsSenderUtil
 {
@@ -33,6 +35,7 @@ public:
 		return distribution(engine) % 900000L + 100000L;
 	}
 
+#if ( defined(WIN32) || defined(WIN64) )
 	static std::string gbk2utf8(const std::string &gbk)
 	{
 		int len = MultiByteToWideChar(CP_ACP, 0, gbk.c_str(), -1, nullptr, 0);
@@ -49,6 +52,7 @@ public:
 		std::string utf(str.get());
 		return utf;
 	}
+#endif
 
 	static std::string calculateSignature(const std::string &appkey, int64_t random, int64_t time, const std::string &phoneNumber)
 	{

@@ -30,7 +30,7 @@ public:
 		nlohmann::json json;
 		json["tel"] = { { "nationcode", nationCode },{ "mobile", phoneNumber } };
 		json["prompttype"] = prompttype;
-		json["promptfile"] = SmsSenderUtil::gbk2utf8(msg);
+		json["promptfile"] = msg;
 		json["playtimes"] = playtimes;
 		json["sig"] = SmsSenderUtil::calculateSignature(this->appkey_, random, now, phoneNumber);
 		json["time"] = now;

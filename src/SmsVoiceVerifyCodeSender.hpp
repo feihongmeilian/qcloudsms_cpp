@@ -26,7 +26,7 @@ public:
 		const auto now = SmsSenderUtil::getCurrentTime();
 		nlohmann::json json;
 		json["tel"] = { { "nationcode", nationCode },{ "mobile", phoneNumber } };
-		json["msg"] = SmsSenderUtil::gbk2utf8(msg);
+		json["msg"] = msg;
 		json["sig"] = SmsSenderUtil::calculateSignature(this->appkey_, random, now, phoneNumber);
 		json["time"] = now;
 		json["playtimes"] = playtimes;

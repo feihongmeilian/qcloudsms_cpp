@@ -32,7 +32,7 @@ public:
 		nlohmann::json json;
 		json["tel"] = toTel(nationCode, phoneNumbers);
 		json["type"] = type;
-		json["msg"] = SmsSenderUtil::gbk2utf8(msg);
+		json["msg"] = msg;
 		json["sig"] = SmsSenderUtil::calculateSignature(this->appkey_, random, now, phoneNumbers);
 		json["time"] = now;
 		json["extend"] = extend;
