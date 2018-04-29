@@ -35,7 +35,7 @@ include_directories(../deps/Simple-Web-Server)
 	    std::string phoneNumber([填自己的];);
 	    int type = 0;
 
-	    std::string msg([填自己的];);
+	    std::string msg0([填自己的];);
     #if ( defined(WIN32) || defined(WIN64) )
             auto msg = SmsSenderUtil::gbk2utf8(msg0);
     #else
