@@ -37,7 +37,7 @@ include_directories(../deps/Simple-Web-Server)
 
 	    std::string msg0([填自己的];);
     #if ( defined(WIN32) || defined(WIN64) )
-            std::string msg = SmsSenderUtil::gbk2utf8(msg0);
+            std::string msg = SmsSenderUtil::gbk2utf8(msg0);
     #else
             std::string msg(std::move(msg0));
     #endif
